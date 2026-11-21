@@ -66,23 +66,23 @@ discord_data = {
     ],
     "components": [
         {
-      "id": 824072476,
-      "type": 1,
-      "components": [
-        {
-          "id": 689245556,
-          "type": 2,
-          "style": 5,
-          "label": "Play Now!",
-          "emoji": {
-            "name": "🌍",
-            "animated": False
-          },
-          "url": f"{challenge_link}",
-          "action_set_id": "786811903"
+          "id": 824072476,
+          "type": 1,
+          "components": [
+            {
+              "id": 689245556,
+              "type": 2,
+              "style": 5,
+              "label": "Play Now!",
+              "emoji": {
+                "name": "🌍",
+                "animated": False
+              },
+              "url": f"{challenge_link}",
+              "action_set_id": "786811903"
+            }
+          ]
         }
-      ]
-    }
     ],
 }
 
