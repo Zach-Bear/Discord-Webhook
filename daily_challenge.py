@@ -1,4 +1,6 @@
 import os
+from datetime import datetime, timezone
+
 import requests
 
 NCFA_TOKEN = os.environ["NCFA_TOKEN"]
@@ -39,8 +41,31 @@ data = response.json()
 challenge_token = data["token"]
 challenge_link = f"https://www.geoguessr.com/challenge/{challenge_token}"
 
+def rule(forbidden):
+    return "❌ Off" if forbidden else "✅ On"
+
+minutes, seconds = divmod(payload["timeLimit"], 60)
+time_limit = f"{minutes}:{seconds:02d}" if payload["timeLimit"] else "Unlimited"
+
 discord_data = {
-    "content": f"Play today's geoguessr challenge here: {challenge_link}"
+    "username": "GeoGuessr Daily",
+    "embeds": [
+        {
+            "title": "🌍 Today's GeoGuessr Challenge",
+            "url": challenge_link,
+            "description": f"A new daily challenge is ready!\n**[▶ Play now]({challenge_link})**",
+            "color": 0x7950E5,
+            "fields": [
+                {"name": "⏱️ Time limit", "value": time_limit, "inline": True},
+                {"name": "🚶 Moving", "value": rule(payload["forbidMoving"]), "inline": True},
+                {"name": "🔍 Zooming", "value": rule(payload["forbidZooming"]), "inline": True},
+                {"name": "🔄 Panning", "value": rule(payload["forbidRotating"]), "inline": True},
+                {"name": "🗺️ Map", "value": f"[View map](https://www.geoguessr.com/maps/{MAP_ID})", "inline": True},
+            ],
+            "footer": {"text": "Good luck! Post your score below 👇"},
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }
+    ],
 }
 
 requests.post(WEBHOOK_URL, json=discord_data).raise_for_status()
