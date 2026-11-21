@@ -1,13 +1,11 @@
 import os
 from datetime import datetime, timezone
-
 import requests
 
 NCFA_TOKEN = os.environ["NCFA_TOKEN"]
 WEBHOOK_URL = os.environ["WEBHOOK_URL"]
 MAP_ID = os.environ["MAP_ID"]
 
-# MAP_ID = "62a44b22040f04bd36e8a914"
 geo_url = "https://www.geoguessr.com/api/v3/challenges"
 headers = {
     "Cookie": f"_ncfa={NCFA_TOKEN}",
@@ -18,8 +16,7 @@ headers = {
 
 }
 
-
-# Customise rules 
+# Customise challenge rules below 
 payload = {
     "map": MAP_ID,
     "forbidMoving": False,
@@ -47,6 +44,7 @@ def rule(forbidden):
 minutes, seconds = divmod(payload["timeLimit"], 60)
 time_limit = f"{minutes}:{seconds:02d}" if payload["timeLimit"] else "Unlimited"
 
+# Edit the webhook embed formatting below. 
 discord_data = {
     "username": "GeoGuessr Daily",
     "embeds": [
@@ -54,7 +52,7 @@ discord_data = {
             "title": "🌍 Today's GeoGuessr Challenge",
             "url": challenge_link,
             "description": f"A new daily challenge is ready!\n**[▶ Play now]({challenge_link})**",
-            "color": 0x7950E5,
+            "color": 0x7950E5, 
             "fields": [
                 {"name": "⏱️ Time limit", "value": time_limit, "inline": True},
                 {"name": "🚶 Moving", "value": rule(payload["forbidMoving"]), "inline": True},
@@ -65,6 +63,26 @@ discord_data = {
             "footer": {"text": "Good luck!"},
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
+    ],
+    "components": [
+        {
+      "id": 824072476,
+      "type": 1,
+      "components": [
+        {
+          "id": 689245556,
+          "type": 2,
+          "style": 5,
+          "label": "Play Now!",
+          "emoji": {
+            "name": "🌍",
+            "animated": false
+          },
+          "url": f"{challenge_link}",
+          "action_set_id": "786811903"
+        }
+      ]
+    }
     ],
 }
 
