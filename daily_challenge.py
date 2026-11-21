@@ -76,7 +76,7 @@ discord_data = {
           "label": "Play Now!",
           "emoji": {
             "name": "🌍",
-            "animated": false
+            "animated": False
           },
           "url": f"{challenge_link}",
           "action_set_id": "786811903"
