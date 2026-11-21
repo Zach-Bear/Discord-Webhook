@@ -5,9 +5,9 @@ import requests
 
 NCFA_TOKEN = os.environ["NCFA_TOKEN"]
 WEBHOOK_URL = os.environ["WEBHOOK_URL"]
-# MAP_ID = os.environ["MAP_ID"]
+MAP_ID = os.environ["MAP_ID"]
 
-MAP_ID = "62a44b22040f04bd36e8a914"
+# MAP_ID = "62a44b22040f04bd36e8a914"
 geo_url = "https://www.geoguessr.com/api/v3/challenges"
 headers = {
     "Cookie": f"_ncfa={NCFA_TOKEN}",
