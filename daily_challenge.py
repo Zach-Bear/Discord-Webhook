@@ -10,7 +10,10 @@ geo_url = "https://geoguessr.com"
 headers = {
     "Cookie": f"_ncfa={NCFA_TOKEN}",
     "Content-Type": "application/json",
+    "Origin": "https://geoguessr.com",
+    "Referer": f"https://geoguessr.com/maps/{MAP_ID}",
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+
 }
 
 
@@ -25,19 +28,16 @@ payload = {
 
 response = requests.post(geo_url, json=payload, headers=headers)
 
-# res = session.post("https://geoguessr.com", json=payload)
-# res.raise_for_status()
+print("STATUS:", response.status_code)
+print("FINAL URL:", response.url)
+print("BODY:" response.text[:500])
 
-if not response.ok or not response.text:
-    print(f"Status Code: {response.status_code}")
-    print(f"Response Body: {response.text}")
-    response.raise_for_status()
-
-challenge_token = response.json()["token"]
-challenge_url = f"https://geoguessr.com{challenge_token}"
+data = response.json()
+challenge_token = data["token"]
+challenge_link = f"https://geoguessr.com/challenge/{challenge_token}"
 
 discord_data = {
-    "content": f"Play today's geoguessr challenge here: {challenge_url}"
+    "content": f"Play today's geoguessr challenge here: {challenge_link}"
 }
 
 requests.pot(WEBHOOK_URL, json=discord_data).raise_for_status()
