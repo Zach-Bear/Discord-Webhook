@@ -3,6 +3,8 @@
 <div align="center">
 
 [![GitHub License](https://img.shields.io/github/license/d1s4rr4y/Discord-Webhook?style=for-the-badge)](https://github.com/d1s4rr4y/Discord-Webhook/blob/master/LICENSE)
+![GitHub Release](https://img.shields.io/github/v/release/d1s4rr4y/Discord-Webhook?style=for-the-badge)
+
 ![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)
 ![Python](https://img.shields.io/badge/python-%233670A0.svg?style=for-the-badge&logo=python&logoColor=ffdd54)
 ![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)
