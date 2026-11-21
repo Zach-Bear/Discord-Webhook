@@ -10,7 +10,7 @@ session.cookies.set("__ncfa", NCFA_TOKEN, domain=".geoguessr.com")
 
 # Customise rules 
 payload = {
-    "map": MAP_ID
+    "map": MAP_ID,
     "forbidMoving": False,
     "forbidZooming": False,
     "forbidRotating": False,
