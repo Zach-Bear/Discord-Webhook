@@ -62,7 +62,7 @@ discord_data = {
                 {"name": "🔄 Panning", "value": rule(payload["forbidRotating"]), "inline": True},
                 {"name": "🗺️ Map", "value": f"[View map](https://www.geoguessr.com/maps/{MAP_ID})", "inline": True},
             ],
-            "footer": {"text": "Good luck! Post your score below 👇"},
+            "footer": {"text": "Good luck!"},
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     ],
