@@ -30,7 +30,7 @@ response = requests.post(geo_url, json=payload, headers=headers)
 
 print("STATUS:", response.status_code)
 print("FINAL URL:", response.url)
-print("BODY:" response.text[:500])
+print("BODY:", response.text[:500])
 
 data = response.json()
 challenge_token = data["token"]
