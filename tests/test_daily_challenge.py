@@ -1,5 +1,6 @@
 import os
 import unittest
+from datetime import date, datetime, timedelta, timezone
 from unittest.mock import patch
 
 from challenge_config import ChallengeSettings
@@ -7,6 +8,48 @@ import daily_challenge
 
 
 class DailyChallengeTests(unittest.TestCase):
+    def test_select_map_by_utc_date_is_deterministic_and_preserves_order(self):
+        map_ids = ("map-a", "map-b", "map-c")
+        utc_date = datetime(
+            2026, 11, 22, 23, 59,
+            tzinfo=timezone(timedelta(hours=-5)),
+        )
+
+        first = daily_challenge.select_map_by_utc_date(map_ids, utc_date)
+        second = daily_challenge.select_map_by_utc_date(map_ids, utc_date)
+
+        self.assertEqual(first, second)
+        self.assertEqual(map_ids, ("map-a", "map-b", "map-c"))
+
+    def test_known_utc_dates_select_expected_modulo_index(self):
+        map_ids = ("map-a", "map-b", "map-c")
+
+        for utc_date in (date(2026, 11, 22), date(2026, 11, 23), date(2026, 11, 24)):
+            with self.subTest(utc_date=utc_date):
+                expected = map_ids[
+                    daily_challenge.utc_day_number(utc_date) % len(map_ids)
+                ]
+                self.assertEqual(
+                    daily_challenge.select_map_by_utc_date(map_ids, utc_date),
+                    expected,
+                )
+
+    def test_empty_map_rotation_list_has_clear_error(self):
+        with self.assertRaisesRegex(
+            ValueError, "MAP_IDS must contain at least one map ID"
+        ):
+            daily_challenge.select_map_by_utc_date(())
+
+    def test_manual_map_id_takes_precedence_over_rotation(self):
+        self.assertEqual(
+            daily_challenge.resolve_map_id(
+                "manual-map",
+                ("map-a", "map-b"),
+                date(2026, 11, 22),
+            ),
+            "manual-map",
+        )
+
     def test_invalid_settings_fail_before_external_calls(self):
         environment = {
             "NCFA_TOKEN": "token",

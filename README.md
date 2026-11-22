@@ -39,6 +39,8 @@ For automatic map rotation, add a repository variable named `MAP_IDS` containing
 
 Whitespace around IDs and empty comma-separated entries are ignored. If `MAP_IDS` is omitted or empty, automatic rotation has no configured maps and `MAP_ID` remains the manual/single-map fallback.
 
+When `MAP_ID` is omitted and `MAP_IDS` is configured, the workflow selects a map deterministically from the current UTC date. The UTC day number modulo the number of configured maps determines the list position; rerunning the workflow on the same UTC day returns the same map.
+
 `NCFA_TOKEN` is more involved:
 
 1. Log into GeoGuessr in your browser of choice.
