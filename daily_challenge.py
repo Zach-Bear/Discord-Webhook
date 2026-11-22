@@ -1,11 +1,11 @@
 import os
 from datetime import datetime, timezone
 from typing import NoReturn
+from discord_embed import GEO_ORIGIN, build_embed
 
 import requests
 
 GEO_URL = "https://www.geoguessr.com/api/v3/challenges"
-GEO_ORIGIN = "https://www.geoguessr.com"
 
 NCFA_TOKEN = os.environ["NCFA_TOKEN"]
 WEBHOOK_URL = os.environ["WEBHOOK_URL"]
@@ -68,54 +68,6 @@ def create_challenge(payload: dict, ncfa_token: str) -> str:
         raise RuntimeError("GeoGuessr response did not contain a challenge token") from error
 
     return f"{GEO_ORIGIN}/challenge/{challenge_token}"
-
-
-def build_embed(challenge_link: str, map_id: str, payload: dict) -> dict:
-    return {
-        "username": "GeoGuessr Daily",
-        "embeds": [
-            {
-                "title": "🌍 Today's GeoGuessr Challenge",
-                "url": challenge_link,
-                "description": (
-                    "<@385881467042922496>\n"
-                    "A new daily challenge is ready!\n"
-                    f"**[▶ Play now]({challenge_link})**"
-                ),
-                "color": 0x7950E5,
-                "fields": [
-                    {
-                        "name": "⏱️ Time limit",
-                        "value": format_time_limit(payload["timeLimit"]),
-                        "inline": True,
-                    },
-                    {
-                        "name": "🚶 Moving",
-                        "value": format_rule(payload["forbidMoving"]),
-                        "inline": True,
-                    },
-                    {
-                        "name": "🔍 Zooming",
-                        "value": format_rule(payload["forbidZooming"]),
-                        "inline": True,
-                    },
-                    {
-                        "name": "🔄 Panning",
-                        "value": format_rule(payload["forbidRotating"]),
-                        "inline": True,
-                    },
-                    {
-                        "name": "🗺️ Map",
-                        "value": f"[View map]({GEO_ORIGIN}/maps/{map_id})",
-                        "inline": True,
-                    },
-                ],
-                "footer": {"text": "Good luck!"},
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-            }
-        ],
-    }
-
 
 def main() -> None:
     ncfa_token = require_environment("NCFA_TOKEN")
