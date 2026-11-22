@@ -18,10 +18,10 @@ def format_rule(forbidden: bool) -> str:
 
 def build_embed(challenge_link: str, map_id: str, payload: dict) -> dict:
     return {
+        "content": "<@385881467042922496>",
         "username": "GeoGuessr Daily",
         "embeds": [
             {
-                "content": "<@385881467042922496>",
                 "title": "🌍 Today's GeoGuessr Challenge",
                 "url": challenge_link,
                 "description": (
