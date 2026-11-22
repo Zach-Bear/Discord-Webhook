@@ -19,4 +19,5 @@ jobs:
           NCFA_TOKEN: ${{ secrets.NCFA_TOKEN }}
           WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
           MAP_ID: ${{ secrets.MAP_ID }}
+          ROLE_ID: ${{ secrets.ROLE_ID }}
         run: python daily_challenge.py

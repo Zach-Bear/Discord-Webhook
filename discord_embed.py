@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from typing import Optional
 
 
 GEO_ORIGIN = "https://www.geoguessr.com"
@@ -16,9 +17,14 @@ def format_rule(forbidden: bool) -> str:
     return "❌ Off" if forbidden else "✅ On"
 
 
-def build_embed(challenge_link: str, map_id: str, map_name: str, payload: dict) -> dict:
-    return {
-        "content": "<@&741689120757383298>", # @& for role, @ for user, # for channel
+def build_embed(
+    challenge_link: str,
+    map_id: str,
+    map_name: str,
+    payload: dict,
+    role_id: Optional[str] = None,
+) -> dict:
+    embed = {
         "username": "GeoGuessr Daily",
         "embeds": [
             {
@@ -61,3 +67,9 @@ def build_embed(challenge_link: str, map_id: str, map_name: str, payload: dict) 
             }
         ],
     }
+
+    if role_id:
+        embed["content"] = f"<@&{role_id}>"
+        embed["allowed_mentions"] = {"roles": [role_id]}
+
+    return embed
