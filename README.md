@@ -41,6 +41,17 @@ Secrets can be set in **Settings > Secrets and Variables > Actions**. Make sure 
 
 **NOTE:** Do not share this NCFA cookie value with anyone, **it will grant access to your GeoGuessr account.**
 
+## Local Testing
+
+Run the unit tests from the repository root with Python 3.11 or newer:
+
+```shell
+python -m pip install requests
+python -m unittest discover --start-directory tests --verbose
+```
+
+The tests use mocks for external requests, so they do not require GeoGuessr credentials or a Discord webhook URL.
+
 ## Changing Settings
 
 ### Message Schedule
@@ -72,6 +83,8 @@ Scheduling workflows through GitHub Actions often leads to hugely delayed workfl
 When optional challenge settings are omitted or empty, these defaults are used:
 
 - `TIME_LIMIT`: `90` seconds (`0` means unlimited)
-- `FORBID_MOVING`: `False`
-- `FORBID_ZOOMING`: `False`
-- `FORBID_ROTATING`: `False`
+- `FORBID_MOVING`: `false`
+- `FORBID_ZOOMING`: `false`
+- `FORBID_ROTATING`: `false`
+
+To override these defaults in GitHub Actions, add the corresponding values as repository variables under **Settings > Secrets and variables > Actions > Variables**. Boolean values must be `true` or `false`.

@@ -1,8 +1,8 @@
 import os
 import requests
 
+from challenge_config import ChallengeSettings, load_challenge_settings
 from discord_embed import build_embed
-from challenge_config import load_challenge_settings
 from geoguessr_api import create_challenge, get_map_name
 
 
@@ -13,13 +13,16 @@ def require_environment(name: str) -> str:
     return value
 
 
-def create_challenge_payload(map_id: str) -> dict:
+def create_challenge_payload(
+    map_id: str,
+    settings: ChallengeSettings,
+) -> dict:
     return {
         "map": map_id,
-        "forbidMoving": False,
-        "forbidZooming": False,
-        "forbidRotating": False,
-        "timeLimit": 90,
+        "forbidMoving": settings.forbid_moving,
+        "forbidZooming": settings.forbid_zooming,
+        "forbidRotating": settings.forbid_rotating,
+        "timeLimit": settings.time_limit,
     }
 
 
@@ -31,9 +34,10 @@ def run_daily_challenge(
     ncfa_token: str,
     webhook_url: str,
     map_id: str,
+    settings: ChallengeSettings,
     role_id: str | None = None,
 ) -> None:
-    payload = create_challenge_payload(map_id)
+    payload = create_challenge_payload(map_id, settings)
     map_name = get_map_name(map_id, ncfa_token)
     challenge_link = create_challenge(payload, ncfa_token)
     discord_message = build_embed(
@@ -52,7 +56,8 @@ def main() -> None:
         ncfa_token,
         webhook_url,
         map_id,
-        os.environ.get("ROLE_ID"),
+        challenge_settings,
+        role_id=os.environ.get("ROLE_ID"),
     )
 
 

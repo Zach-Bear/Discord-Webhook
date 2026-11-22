@@ -20,4 +20,8 @@ jobs:
           WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
           MAP_ID: ${{ secrets.MAP_ID }}
           ROLE_ID: ${{ secrets.ROLE_ID }}
+          TIME_LIMIT: ${{ vars.TIME_LIMIT }}
+          FORBID_MOVING: ${{ vars.FORBID_MOVING }}
+          FORBID_ZOOMING: ${{ vars.FORBID_ZOOMING }}
+          FORBID_ROTATING: ${{ vars.FORBID_ROTATING }}
         run: python daily_challenge.py
