@@ -44,12 +44,23 @@ In `.github/workflows/daily.yml`, there is the following block:
 
 ```yml
 on:
-  schedule:
+  workflow_dispatch:
+```
+
+This allows the workflow to be run manually, either through the built-in GitHub Actions menu, or via the GitHub API. 
+
+To schedule the workflow, you can add 
+
+```
+schedule:
     - cron: "0 12 * * *"
 ```
 
-This defines a standard cron format scheduler, i.e. `minute hour day month weekday`. Edit this line to change when the message is scheduled for (by default, it is noon UTC, every day). 
+under `on:`, alongside `workflow_dispatch`. `cron` is defined in the standard cron format, i.e. `minute hour day month weekday`.
+The example above schedules the workflow for 12:00 UTC (noon) every day. 
 For a graphical cron schedule expression editor, use [crontab guru](https://crontab.guru/)
+
+Scheduling workflows through GitHub Actions often leads to hugely delayed workflows, and so it is also possible to schedule this workflow using services such as [Cron Job](https://console.cron-job.org/jobs), CloudFlare, or AWS, and the [GitHub REST API](https://docs.github.com/en/rest?apiVersion=2026-03-10)
 
 ### Challenge Settings
 In `daily_challenge.py` there is a section containing the following: 
