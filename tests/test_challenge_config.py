@@ -1,12 +1,14 @@
 import os
 import unittest
 from dataclasses import fields
+from datetime import date
 from unittest.mock import patch
 
 from challenge_config import (
     ChallengeSettings,
     load_challenge_settings,
     load_map_ids,
+    resolve_map_id,
 )
 from daily_challenge import require_environment
 
@@ -87,6 +89,27 @@ class ChallengeConfigTests(unittest.TestCase):
             ("map-123", "map-456"),
         )
 
+    def test_manual_map_id_overrides_automatic_selection(self):
+        self.assertEqual(
+            resolve_map_id(
+                "  manual-map  ",
+                ("automatic-a", "automatic-b"),
+                date(2026, 11, 22),
+            ),
+            "manual-map",
+        )
+
+    def test_empty_manual_map_id_falls_back_to_rotation(self):
+        map_ids = ("automatic-a", "automatic-b")
+
+        selected = resolve_map_id(
+            "   ",
+            map_ids,
+            date(2026, 11, 22),
+        )
+
+        self.assertIn(selected, map_ids)
+
     def test_zero_time_limit_is_valid(self):
         settings = load_challenge_settings({"TIME_LIMIT": "0"})
 
@@ -109,7 +132,7 @@ class ChallengeConfigTests(unittest.TestCase):
                     load_challenge_settings({name: "yes"})
 
     def test_required_environment_variables_still_raise_when_missing(self):
-        required_variables = ("NCFA_TOKEN", "WEBHOOK_URL", "MAP_ID")
+        required_variables = ("NCFA_TOKEN", "WEBHOOK_URL")
 
         with patch.dict(os.environ, {}, clear=True):
             for name in required_variables:

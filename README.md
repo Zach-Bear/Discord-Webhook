@@ -17,11 +17,12 @@ Creates a GeoGuessr challenge link on a schedule (according to some pre-defined 
 
 ## Setup
 
-To make this work, you'll need 3 secrets defined in your repository:
+To make this work, you need these secrets defined in your repository:
 
 - `NCFA_TOKEN`
-- `MAP_ID`
 - `WEBHOOK_URL`
+
+For a fixed challenge map, optionally define `MAP_ID` as a repository secret. `MAP_ID` takes precedence over automatic rotation.
 
 Optionally, add a `ROLE_ID` repository secret to ping a Discord role when the challenge is posted. If it is unset, no role will be pinged.
 
@@ -39,7 +40,7 @@ For automatic map rotation, add a repository variable named `MAP_IDS` containing
 
 Whitespace around IDs and empty comma-separated entries are ignored. If `MAP_IDS` is omitted or empty, automatic rotation has no configured maps and `MAP_ID` remains the manual/single-map fallback.
 
-When `MAP_ID` is omitted and `MAP_IDS` is configured, the workflow selects a map deterministically from the current UTC date. The UTC day number modulo the number of configured maps determines the list position; rerunning the workflow on the same UTC day returns the same map.
+When `MAP_ID` is omitted or blank and `MAP_IDS` is configured, the workflow selects a map deterministically from the current UTC date. The UTC day number modulo the number of configured maps determines the list position; rerunning the workflow on the same UTC day returns the same map.
 
 `NCFA_TOKEN` is more involved:
 
