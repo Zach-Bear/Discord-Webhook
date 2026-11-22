@@ -1,8 +1,7 @@
 from datetime import datetime, timezone
 from typing import Optional
 
-
-GEO_ORIGIN = "https://www.geoguessr.com"
+from geoguessr_api import GEO_ORIGIN
 
 
 def format_time_limit(seconds: int) -> str:
