@@ -8,6 +8,25 @@ from daily_challenge import require_environment
 
 
 class ChallengeConfigTests(unittest.TestCase):
+    def test_omitted_optional_settings_use_defaults(self):
+        self.assertEqual(
+            load_challenge_settings({}),
+            ChallengeSettings(),
+        )
+
+    def test_empty_optional_settings_use_defaults(self):
+        environment = {
+            "TIME_LIMIT": "",
+            "FORBID_MOVING": "",
+            "FORBID_ZOOMING": "",
+            "FORBID_ROTATING": "",
+        }
+
+        self.assertEqual(
+            load_challenge_settings(environment),
+            ChallengeSettings(),
+        )
+
     def test_loader_reads_optional_settings_from_injected_environment(self):
         environment = {
             "TIME_LIMIT": "120",
