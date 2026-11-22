@@ -34,20 +34,81 @@ class DailyChallengeTests(unittest.TestCase):
                     expected,
                 )
 
+    def test_selection_wraps_across_end_of_map_list(self):
+        map_ids = ("map-a", "map-b", "map-c")
+        utc_date = date(2026, 11, 22)
+
+        index = daily_challenge.utc_day_number(utc_date) % len(map_ids)
+        if index != len(map_ids) - 1:
+            utc_date = date.fromordinal(
+                utc_date.toordinal()
+                + (len(map_ids) - 1 - index)
+            )
+
+        selected = daily_challenge.select_map_by_utc_date(
+            map_ids,
+            utc_date,
+        )
+
+        self.assertEqual(selected, "map-c")
+        self.assertEqual(
+            map_ids,
+            ("map-a", "map-b", "map-c"),
+        )
+
+    def test_timezone_offset_datetime_uses_utc_date(self):
+        utc_date = datetime(
+            2026,
+            11,
+            23,
+            1,
+            30,
+            tzinfo=timezone(timedelta(hours=2)),
+        )
+        map_ids = ("map-a", "map-b", "map-c")
+
+        selected = daily_challenge.select_map_by_utc_date(
+            map_ids,
+            utc_date,
+        )
+
+        expected = map_ids[
+            date(2026, 11, 22).toordinal() % len(map_ids)
+        ]
+        self.assertEqual(selected, expected)
+
     def test_empty_map_rotation_list_has_clear_error(self):
         with self.assertRaisesRegex(
             ValueError, "MAP_IDS must contain at least one map ID"
         ):
             daily_challenge.select_map_by_utc_date(())
 
-    def test_manual_map_id_takes_precedence_over_rotation(self):
-        self.assertEqual(
-            daily_challenge.resolve_map_id(
-                "manual-map",
-                ("map-a", "map-b"),
-                date(2026, 11, 22),
-            ),
+    @patch("challenge_config.select_map_by_utc_date")
+    def test_manual_map_id_takes_precedence_without_rotation(self, select_map):
+        selected = daily_challenge.resolve_map_id(
             "manual-map",
+            ("map-a", "map-b"),
+            date(2026, 11, 22),
+        )
+
+        self.assertEqual(selected, "manual-map")
+        select_map.assert_not_called()
+
+    def test_automatic_selection_is_fallback_without_manual_map(self):
+        map_ids = ("map-a", "map-b", "map-c")
+        utc_date = date(2026, 11, 22)
+
+        selected = daily_challenge.resolve_map_id(
+            None,
+            map_ids,
+            utc_date,
+        )
+
+        self.assertEqual(
+            selected,
+            map_ids[
+                utc_date.toordinal() % len(map_ids)
+            ],
         )
 
     def test_invalid_settings_fail_before_external_calls(self):
