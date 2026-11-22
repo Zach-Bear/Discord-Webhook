@@ -1,7 +1,14 @@
 import os
 import requests
 
-from challenge_config import ChallengeSettings, load_challenge_settings
+from challenge_config import (
+    ChallengeSettings,
+    load_challenge_settings,
+    resolve_map_id,
+    select_map,
+    select_map_by_utc_date,
+    utc_day_number,
+)
 from discord_embed import build_embed
 from geoguessr_api import create_challenge, get_map_name
 
@@ -50,7 +57,17 @@ def main() -> None:
     challenge_settings = load_challenge_settings()
     ncfa_token = require_environment("NCFA_TOKEN")
     webhook_url = require_environment("WEBHOOK_URL")
-    map_id = require_environment("MAP_ID")
+    manual_map_id = os.environ.get("MAP_ID")
+
+    try:
+        map_id = resolve_map_id(
+            manual_map_id,
+            challenge_settings.map_ids,
+        )
+    except ValueError as error:
+        raise RuntimeError(
+            "Missing required environment variable: MAP_ID or MAP_IDS"
+        ) from error
 
     run_daily_challenge(
         ncfa_token,

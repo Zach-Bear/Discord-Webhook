@@ -1,6 +1,8 @@
 import os
 from collections.abc import Mapping
+from collections.abc import Sequence
 from dataclasses import dataclass
+from datetime import date, datetime, timezone
 
 
 @dataclass(frozen=True)
@@ -23,6 +25,59 @@ def load_map_ids(environ: Mapping[str, str] | None = None) -> tuple[str, ...]:
         for entry in value.split(",")
         if (map_id := entry.strip())
     )
+
+
+def utc_day_number(utc_date: date | datetime | None = None) -> int:
+    if utc_date is None:
+        utc_date = datetime.now(timezone.utc).date()
+    elif isinstance(utc_date, datetime):
+        if utc_date.tzinfo is None:
+            utc_date = utc_date.replace(tzinfo=timezone.utc)
+        utc_date = utc_date.astimezone(timezone.utc).date()
+    elif not isinstance(utc_date, date):
+        raise TypeError("UTC date must be a date or datetime")
+
+    return utc_date.toordinal()
+
+
+def select_map_by_utc_date(
+    map_ids: Sequence[str],
+    utc_date: date | datetime | None = None,
+) -> str:
+    if not map_ids:
+        raise ValueError("MAP_IDS must contain at least one map ID")
+
+    valid_map_ids = tuple(
+        map_id.strip()
+        for map_id in map_ids
+        if isinstance(map_id, str) and map_id.strip()
+    )
+    if not valid_map_ids:
+        raise ValueError("MAP_IDS must contain at least one map ID")
+
+    index = utc_day_number(utc_date) % len(valid_map_ids)
+    return valid_map_ids[index]
+
+
+def select_map(
+    map_ids: Sequence[str],
+    utc_date: date | datetime | None = None,
+) -> str:
+    return select_map_by_utc_date(map_ids, utc_date)
+
+
+get_utc_day_number = utc_day_number
+select_rotated_map = select_map_by_utc_date
+
+
+def resolve_map_id(
+    manual_map_id: str | None,
+    map_ids: Sequence[str],
+    utc_date: date | datetime | None = None,
+) -> str:
+    if manual_map_id is not None and manual_map_id.strip():
+        return manual_map_id.strip()
+    return select_map_by_utc_date(map_ids, utc_date)
 
 
 def load_challenge_settings(
