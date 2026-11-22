@@ -1,3 +1,4 @@
+import os
 import unittest
 from unittest.mock import patch
 
@@ -6,6 +7,27 @@ import daily_challenge
 
 
 class DailyChallengeTests(unittest.TestCase):
+    def test_invalid_settings_fail_before_external_calls(self):
+        environment = {
+            "NCFA_TOKEN": "token",
+            "WEBHOOK_URL": "webhook-url",
+            "MAP_ID": "map-123",
+            "TIME_LIMIT": "invalid",
+        }
+
+        with patch.dict(os.environ, environment, clear=True):
+            with patch("daily_challenge.get_map_name") as get_map_name:
+                with patch("daily_challenge.create_challenge") as create_challenge:
+                    with patch("daily_challenge.send_discord_message") as send_message:
+                        with self.assertRaisesRegex(
+                            ValueError, "TIME_LIMIT must be a non-negative integer"
+                        ):
+                            daily_challenge.main()
+
+        get_map_name.assert_not_called()
+        create_challenge.assert_not_called()
+        send_message.assert_not_called()
+
     def test_create_challenge_payload_uses_default_settings(self):
         self.assertEqual(
             daily_challenge.create_challenge_payload(
