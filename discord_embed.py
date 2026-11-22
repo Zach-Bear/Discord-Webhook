@@ -18,7 +18,7 @@ def format_rule(forbidden: bool) -> str:
 
 def build_embed(challenge_link: str, map_id: str, payload: dict) -> dict:
     return {
-        "content": "<@385881467042922496>",
+        "content": "<@1260915656035930113>",
         "username": "GeoGuessr Daily",
         "embeds": [
             {
@@ -28,7 +28,7 @@ def build_embed(challenge_link: str, map_id: str, payload: dict) -> dict:
                     "A new daily challenge is ready!\n"
                     f"**[▶ Play now]({challenge_link})**"
                 ),
-                "color": 0x7950E5,
+                "color": 0x360666,
                 "fields": [
                     {
                         "name": "⏱️ Time limit",
