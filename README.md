@@ -11,91 +11,100 @@
 
 </div>
 
-Creates a GeoGuessr challenge link on a schedule (according to some pre-defined rules), and sends that to a discord channel via webhooks.
+Creates a GeoGuessr challenge and posts its link and settings to a Discord channel. It can be run manually or on a schedule with GitHub Actions.
 
-**Note:** Usage of this script requires a GeoGuessr account and an active Geoguessr subscription.
+You need a GeoGuessr account with an active subscription, a Discord webhook, and Python 3.11+ for local use.
 
-## Setup
+## GitHub setup
 
-To make this work, you need these secrets defined in your repository:
+In **Settings > Secrets and variables > Actions**, add these repository secrets:
 
-- `NCFA_TOKEN`
-- `WEBHOOK_URL`
+| Secret        | Required | Purpose                                 |
+| ------------- | -------- | --------------------------------------- |
+| `NCFA_TOKEN`  | Yes      | Your GeoGuessr `_ncfa` cookie           |
+| `WEBHOOK_URL` | Yes      | Discord channel webhook URL             |
+| `MAP_ID`      | No       | Fixed map, overrides automatic rotation |
+| `ROLE_ID`     | No       | Discord role to mention                 |
 
-For a fixed challenge map, optionally define `MAP_ID` as a repository secret. `MAP_ID` takes precedence over automatic rotation.
+`NCFA_TOKEN` grants access to your GeoGuessr account. Keep it private and store it only as a GitHub secret. To find it, sign in to GeoGuessr, open your browser's developer tools, then find the `_ncfa` cookie under the site's cookies in **Application** (Chrome/Edge) or **Storage** (Firefox).
 
-Optionally, add a `ROLE_ID` repository secret to ping a Discord role when the challenge is posted. If it is unset, no role will be pinged.
+Create a Discord webhook in the destination channel's **Settings > Integrations > Webhooks**, then save its URL as `WEBHOOK_URL`. See [Discord's webhook guide](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks) for details.
 
-Secrets can be set in **Settings > Secrets and Variables > Actions**. Make sure to set these as **Repository Secrets**, NOT Environment Secrets.
+To run the workflow, open **Actions > GeoGuessr Daily Challenge** and choose **Run workflow**.
 
-`WEBHOOK_URL` is created as standard through Discord, for instructions on how to create a webhook see Discord's own guide [here](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks)
+## Map selection
 
-`MAP_ID` is simply the string of characters at the end of a map link. For example, the link t "An Arbitrary World" is `https://www.geoguessr.com/maps/6089bfcff6a0770001f645dd`, so you would set `MAP_ID` to `6089bfcff6a0770001f645dd`
+Set either `MAP_ID` or the `MAP_IDS` repository variable:
 
-For automatic map rotation, add a repository variable named `MAP_IDS` containing map IDs separated by commas, for example:
+- `MAP_ID` selects one fixed map and takes precedence.
+- `MAP_IDS` is an ordered, comma-separated list used for automatic rotation, for example `map-a,map-b,map-c`.
+- Empty entries and surrounding whitespace in `MAP_IDS` are ignored.
+- With no usable map ID, the run stops with a configuration error.
 
-```text
-6089bfcff6a0770001f645dd, 60a2c5b2a3c2e50001b7a123, 60b1234567890abcdef12345
-```
+Automatic selection uses the UTC day number modulo the number of configured maps. This means reruns on the same UTC date choose the same map, and selection wraps around the list.
 
-Whitespace around IDs and empty comma-separated entries are ignored. If `MAP_IDS` is omitted or empty, automatic rotation has no configured maps and `MAP_ID` remains the manual/single-map fallback.
+A map ID is the final part of a GeoGuessr map URL. For example, the ID in `https://www.geoguessr.com/maps/6089bfcff6a0770001f645dd` is `6089bfcff6a0770001f645dd`.
 
-When `MAP_ID` is omitted or blank and `MAP_IDS` is configured, the workflow selects a map deterministically from the current UTC date. The UTC day number modulo the number of configured maps determines the list position; rerunning the workflow on the same UTC day returns the same map.
+## Challenge settings
 
-`NCFA_TOKEN` is more involved:
+Add these as repository variables under **Settings > Secrets and variables > Actions > Variables**. Omitted or blank values use the defaults.
 
-1. Log into GeoGuessr in your browser of choice.
-2. Open Dev tools (`F12` or `CTRL/CMD + SHIFT + I`)
-3. Navigate to **Application** (Chrome/Edge) or **Storage** (Firefox)
-4. Expand **Cookies**, and select `https://geoguessr.com`
-5. Find the cookie value named `_ncfa` and copy its value. Use this as the value for `NCFA_TOKEN`
+| Variable          | Default | Description                          |
+| ----------------- | ------: | ------------------------------------ |
+| `TIME_LIMIT`      |    `90` | Time in seconds; `0` means unlimited |
+| `FORBID_MOVING`   | `false` | Prevent moving                       |
+| `FORBID_ZOOMING`  | `false` | Prevent zooming                      |
+| `FORBID_ROTATING` | `false` | Prevent panning                      |
 
-**NOTE:** Do not share this NCFA cookie value with anyone, **it will grant access to your GeoGuessr account.**
+Boolean values must be `true` or `false` (case-insensitive).
 
-## Local Testing
+## Scheduling
 
-Run the unit tests from the repository root with Python 3.11 or newer:
-
-```shell
-python -m pip install requests
-python -m unittest discover --start-directory tests --verbose
-```
-
-The tests use mocks for external requests, so they do not require GeoGuessr credentials or a Discord webhook URL.
-
-## Changing Settings
-
-### Message Schedule
-
-In `.github/workflows/daily.yml`, there is the following block:
+The workflow currently supports manual runs. To schedule it, add a `schedule` entry alongside `workflow_dispatch` in `.github/workflows/daily.yml`:
 
 ```yaml
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "0 12 * * *"
 ```
 
-This allows the workflow to be run manually, either through the built-in GitHub Actions menu, or via the GitHub API.
+This example runs daily at 12:00 UTC. Cron uses the standard `minute hour day-of-month month day-of-week` format. GitHub may delay scheduled workflows during busy periods.
 
-To schedule the workflow, you can add
+It is also possible to instead schedule the workflow using the GitHub REST API and an alternative provider with cron scheduling,
+to avoid GitHub's delays.
 
-```yaml
-schedule:
-  - cron: "0 12 * * *"
+## Run locally
+
+From the repository root, install the dependency:
+
+```shell
+python -m pip install requests
 ```
 
-under `on:`, alongside `workflow_dispatch`. `cron` is defined in the standard cron format, i.e. `minute hour day month weekday`.
-The example above schedules the workflow for 12:00 UTC (noon) every day.
-For a graphical cron schedule expression editor, use [crontab guru](https://crontab.guru/)
+Set the required values in your shell, along with either `MAP_ID` or `MAP_IDS`, then run:
 
-Scheduling workflows through GitHub Actions often leads to hugely delayed workflows, and so it is also possible to schedule this workflow using services such as [Cron Job](https://console.cron-job.org/jobs), CloudFlare, or AWS, and the [GitHub REST API](https://docs.github.com/en/rest?apiVersion=2026-03-10)
+```shell
+python daily_challenge.py
+```
 
-### Challenge Settings
+For example, in PowerShell:
 
-When optional challenge settings are omitted or empty, these defaults are used:
+```powershell
+$env:NCFA_TOKEN = "your-ncfa-token"
+$env:WEBHOOK_URL = "your-discord-webhook-url"
+$env:MAP_IDS = "map-a,map-b,map-c"
+python daily_challenge.py
+```
 
-- `TIME_LIMIT`: `90` seconds (`0` means unlimited)
-- `FORBID_MOVING`: `false`
-- `FORBID_ZOOMING`: `false`
-- `FORBID_ROTATING`: `false`
+Optional settings such as `TIME_LIMIT` and `ROLE_ID` can also be supplied as environment variables.
 
-To override these defaults in GitHub Actions, add the corresponding values as repository variables under **Settings > Secrets and variables > Actions > Variables**. Boolean values must be `True` or `False`.
+## Tests
+
+Run the unit tests from the repository root:
+
+```shell
+python -m unittest discover --start-directory tests --verbose
+```
+
+Tests mock external requests, so they do not need credentials and will not create challenges or send Discord messages.
