@@ -2,7 +2,7 @@ name: Geoguessr Daily Challenge
 
 on:
   schedule:
-    - cron: "0 12 * * *" # Runs daily at 12:00 UTC
+    - cron: "0 10 * * *" # Runs daily at 12:00 UTC
   workflow_dispatch: # Can trigger manually for testing
 
 jobs:
