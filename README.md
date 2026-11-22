@@ -21,6 +21,8 @@ To make this work, you'll need 3 secrets defined in your repository:
 - `MAP_ID`
 - `WEBHOOK_URL`
 
+Optionally, add a `ROLE_ID` repository secret to ping a Discord role when the challenge is posted. If it is unset, no role will be pinged.
+
 Secrets can be set in **Settings > Secrets and Variables > Actions**. Make sure to set these as **Repository Secrets**, NOT Environment Secrets. 
 
 `WEBHOOK_URL` is created as standard through Discord, for instructions on how to create a webhook see Discord's own guide [here](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks)

@@ -70,5 +70,6 @@ def build_embed(
 
     if role_id:
         embed["content"] = f"<@&{role_id}>"
+        embed["allowed_mentions"] = {"roles": [role_id]}
 
     return embed
