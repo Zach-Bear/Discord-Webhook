@@ -16,7 +16,7 @@ def format_rule(forbidden: bool) -> str:
     return "❌ Off" if forbidden else "✅ On"
 
 
-def build_embed(challenge_link: str, map_id: str, payload: dict) -> dict:
+def build_embed(challenge_link: str, map_id: str, map_name: str, payload: dict) -> dict:
     return {
         "content": "<@&741689120757383298>", # @& for role, @ for user, # for channel
         "username": "GeoGuessr Daily",
@@ -52,7 +52,7 @@ def build_embed(challenge_link: str, map_id: str, payload: dict) -> dict:
                     },
                     {
                         "name": "🗺️ Map",
-                        "value": f"[View map]({GEO_ORIGIN}/maps/{map_id})",
+                        "value": f"[{map_name}]({GEO_ORIGIN}/maps/{map_id})",
                         "inline": True,
                     },
                 ],
