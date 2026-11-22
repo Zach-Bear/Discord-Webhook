@@ -3,7 +3,11 @@ import unittest
 from dataclasses import fields
 from unittest.mock import patch
 
-from challenge_config import ChallengeSettings, load_challenge_settings
+from challenge_config import (
+    ChallengeSettings,
+    load_challenge_settings,
+    load_map_ids,
+)
 from daily_challenge import require_environment
 
 
@@ -54,7 +58,33 @@ class ChallengeConfigTests(unittest.TestCase):
                 "forbid_moving",
                 "forbid_zooming",
                 "forbid_rotating",
+                "map_ids",
             },
+        )
+
+    def test_map_ids_default_to_empty_tuple(self):
+        self.assertEqual(load_map_ids({}), ())
+        self.assertEqual(load_map_ids({"MAP_IDS": ""}), ())
+        self.assertEqual(load_map_ids({"MAP_IDS": " , , "}), ())
+
+    def test_map_ids_are_trimmed_and_ordered(self):
+        settings = load_challenge_settings(
+            {"MAP_IDS": " map-a, map-b ,,map-c "}
+        )
+
+        self.assertEqual(
+            settings.map_ids,
+            ("map-a", "map-b", "map-c"),
+        )
+
+    def test_loader_includes_map_ids_in_injected_environment(self):
+        settings = load_challenge_settings(
+            {"MAP_IDS": "map-123,map-456"}
+        )
+
+        self.assertEqual(
+            settings.map_ids,
+            ("map-123", "map-456"),
         )
 
     def test_zero_time_limit_is_valid(self):

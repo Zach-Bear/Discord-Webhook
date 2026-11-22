@@ -31,6 +31,14 @@ Secrets can be set in **Settings > Secrets and Variables > Actions**. Make sure 
 
 `MAP_ID` is simply the string of characters at the end of a map link. For example, the link t "An Arbitrary World" is `https://www.geoguessr.com/maps/6089bfcff6a0770001f645dd`, so you would set `MAP_ID` to `6089bfcff6a0770001f645dd`
 
+For automatic map rotation, add a repository variable named `MAP_IDS` containing map IDs separated by commas, for example:
+
+```text
+6089bfcff6a0770001f645dd, 60a2c5b2a3c2e50001b7a123, 60b1234567890abcdef12345
+```
+
+Whitespace around IDs and empty comma-separated entries are ignored. If `MAP_IDS` is omitted or empty, automatic rotation has no configured maps and `MAP_ID` remains the manual/single-map fallback.
+
 `NCFA_TOKEN` is more involved:
 
 1. Log into GeoGuessr in your browser of choice.
