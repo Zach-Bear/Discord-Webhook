@@ -18,7 +18,7 @@ def format_rule(forbidden: bool) -> str:
 
 def build_embed(challenge_link: str, map_id: str, payload: dict) -> dict:
     return {
-        "content": "<@&1260915656035930113>",
+        "content": "<@&1260915656035930113>", # @& for role, @ for user, # for channel
         "username": "GeoGuessr Daily",
         "embeds": [
             {
