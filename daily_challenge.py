@@ -78,7 +78,7 @@ def build_embed(challenge_link: str, map_id: str, payload: dict) -> dict:
                 "title": "🌍 Today's GeoGuessr Challenge",
                 "url": challenge_link,
                 "description": (
-                    "@385881467042922496\n"
+                    "<@385881467042922496>\n"
                     "A new daily challenge is ready!\n"
                     f"**[▶ Play now]({challenge_link})**"
                 ),
