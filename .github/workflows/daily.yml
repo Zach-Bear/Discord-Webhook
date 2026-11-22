@@ -19,6 +19,7 @@ jobs:
           NCFA_TOKEN: ${{ secrets.NCFA_TOKEN }}
           WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
           MAP_ID: ${{ secrets.MAP_ID }}
+          MAP_IDS: ${{ vars.MAP_IDS }}
           ROLE_ID: ${{ secrets.ROLE_ID }}
           TIME_LIMIT: ${{ vars.TIME_LIMIT }}
           FORBID_MOVING: ${{ vars.FORBID_MOVING }}

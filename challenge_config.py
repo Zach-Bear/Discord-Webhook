@@ -9,6 +9,20 @@ class ChallengeSettings:
     forbid_moving: bool = False
     forbid_zooming: bool = False
     forbid_rotating: bool = False
+    map_ids: tuple[str, ...] = ()
+
+
+def load_map_ids(environ: Mapping[str, str] | None = None) -> tuple[str, ...]:
+    environment = os.environ if environ is None else environ
+    value = environment.get("MAP_IDS")
+    if value is None or not value.strip():
+        return ()
+
+    return tuple(
+        map_id
+        for entry in value.split(",")
+        if (map_id := entry.strip())
+    )
 
 
 def load_challenge_settings(
@@ -43,4 +57,5 @@ def load_challenge_settings(
         forbid_moving=parse_boolean("FORBID_MOVING", defaults.forbid_moving),
         forbid_zooming=parse_boolean("FORBID_ZOOMING", defaults.forbid_zooming),
         forbid_rotating=parse_boolean("FORBID_ROTATING", defaults.forbid_rotating),
+        map_ids=load_map_ids(environment),
     )
