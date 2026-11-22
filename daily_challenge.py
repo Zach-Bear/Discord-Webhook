@@ -79,7 +79,7 @@ def main() -> None:
         "forbidMoving": False,
         "forbidZooming": False,
         "forbidRotating": False,
-        "timeLimit": 120,
+        "timeLimit": 90,
     }
 
     challenge_link = create_challenge(payload, ncfa_token)
