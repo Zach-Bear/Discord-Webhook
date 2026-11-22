@@ -87,4 +87,4 @@ When optional challenge settings are omitted or empty, these defaults are used:
 - `FORBID_ZOOMING`: `false`
 - `FORBID_ROTATING`: `false`
 
-To override these defaults in GitHub Actions, add the corresponding values as repository variables under **Settings > Secrets and variables > Actions > Variables**. Boolean values must be `true` or `false`.
+To override these defaults in GitHub Actions, add the corresponding values as repository variables under **Settings > Secrets and variables > Actions > Variables**. Boolean values must be `True` or `False`.
