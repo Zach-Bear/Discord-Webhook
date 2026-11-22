@@ -104,7 +104,9 @@ def main() -> None:
 
     map_name = get_map_name(map_id, ncfa_token)
     challenge_link = create_challenge(payload, ncfa_token)
-    discord_data = build_embed(challenge_link, map_id, map_name, payload)
+    discord_data = build_embed(
+        challenge_link, map_id, map_name, payload, os.environ.get("ROLE_ID")
+    )
 
     requests.post(webhook_url, json=discord_data, timeout=30).raise_for_status()
 
