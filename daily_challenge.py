@@ -2,6 +2,7 @@ import os
 import requests
 
 from discord_embed import build_embed
+from challenge_config import load_challenge_settings
 from geoguessr_api import create_challenge, get_map_name
 
 
@@ -42,6 +43,7 @@ def run_daily_challenge(
 
 
 def main() -> None:
+    challenge_settings = load_challenge_settings()
     ncfa_token = require_environment("NCFA_TOKEN")
     webhook_url = require_environment("WEBHOOK_URL")
     map_id = require_environment("MAP_ID")
