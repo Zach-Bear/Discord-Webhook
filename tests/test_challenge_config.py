@@ -38,6 +38,27 @@ class ChallengeConfigTests(unittest.TestCase):
             },
         )
 
+    def test_zero_time_limit_is_valid(self):
+        settings = load_challenge_settings({"TIME_LIMIT": "0"})
+
+        self.assertEqual(settings.time_limit, 0)
+
+    def test_invalid_time_limits_raise_clear_errors(self):
+        for value in ("not-a-number", "-1", "1.5"):
+            with self.subTest(value=value):
+                with self.assertRaisesRegex(
+                    ValueError, "TIME_LIMIT must be a non-negative integer"
+                ):
+                    load_challenge_settings({"TIME_LIMIT": value})
+
+    def test_invalid_boolean_values_raise_clear_errors(self):
+        for name in ("FORBID_MOVING", "FORBID_ZOOMING", "FORBID_ROTATING"):
+            with self.subTest(name=name):
+                with self.assertRaisesRegex(
+                    ValueError, f"{name} must be 'true' or 'false'"
+                ):
+                    load_challenge_settings({name: "yes"})
+
     def test_required_environment_variables_still_raise_when_missing(self):
         required_variables = ("NCFA_TOKEN", "WEBHOOK_URL", "MAP_ID")
 
